@@ -2,6 +2,7 @@ name: AMS
 version: ${project.version}
 main: de.maile.daniel.ams.AMS
 author: Daniel Maile
+api-version: 1.16
 
 commands:
   ams:

@@ -144,7 +144,7 @@ public class AMSUpgradeInventory
         else
             costString = ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.buybefore").replace("%level%", Utils.getRoman(id)));
 
-        return Utils.createItem(Material.DIAMOND, id + 1, (byte) 0, id + 1 <= boughtLevel,
+        return Utils.createItem(Material.DIAMOND, id + 1, id + 1 <= boughtLevel,
                 ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.efficiency.name") + " " + Utils.getRoman(id + 1)),
                 ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.efficiency.info")
                         .replace("%amount%", Utils.doubleToString(efficiencyUpgradeEfficiency.get(id) * 100, 0))), "",
@@ -161,7 +161,7 @@ public class AMSUpgradeInventory
         else
             costString = ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.buybefore").replace("%level%", Utils.getRoman(id)));
 
-        return Utils.createItem(Material.EMERALD, id + 1, (byte) 0, id + 1 <= boughtLevel,
+        return Utils.createItem(Material.EMERALD, id + 1, id + 1 <= boughtLevel,
                 ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.offlinegem.name") + " " + Utils.getRoman(id + 1)),
                 ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.offlinegem.info")
                 .replace("%amount%", Utils.doubleToString(offlineUpgradeEfficiency.get(id) * 100, 0))), "",

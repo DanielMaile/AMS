@@ -17,17 +17,12 @@ public class InventoryListener implements Listener
     @EventHandler
     public void onClick(InventoryClickEvent event)
     {
-        Inventory clicked = event.getClickedInventory();
-
-        if(clicked == null)
-            return;
-
-        if(clicked.getTitle().equals(AMSInventory.AMS_INVENTORY_NAME))
+        if(event.getView().getTitle().equals(AMSInventory.AMS_INVENTORY_NAME))
         {
             AMSInventory.clicked((Player) event.getWhoClicked(), event.getSlot(), event.getCurrentItem(), event.getClickedInventory(), event.getClick());
             event.setCancelled(true);
         }
-        else if(clicked.getTitle().equals(AMSUpgradeInventory.AMS_UPGRADE_INVENTORY_NAME))
+        else if(event.getView().getTitle().equals(AMSUpgradeInventory.AMS_UPGRADE_INVENTORY_NAME))
         {
             AMSUpgradeInventory.clicked((Player) event.getWhoClicked(), event.getSlot(), event.getCurrentItem(), event.getClickedInventory(), event.getClick());
             event.setCancelled(true);

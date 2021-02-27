@@ -42,7 +42,7 @@ public class AMSInventory
             @Override
             public void run()
             {
-                if (!player.getOpenInventory().getTopInventory().getTitle().equals(AMS_INVENTORY_NAME))
+                if (!player.getOpenInventory().getTitle().equals(AMS_INVENTORY_NAME))
                 {
                     Bukkit.getScheduler().cancelTask(TASK_ID);
                 }
@@ -64,7 +64,7 @@ public class AMSInventory
         YamlConfiguration config = AMS.INSTANCE.getConfig();
 
         ItemStack placeholderItem = Utils.getInventoryPlaceholderItem();
-        ItemStack spawnerItem = Utils.createItem(Material.MOB_SPAWNER, 1, (byte) 0, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.spawner.name")),
+        ItemStack spawnerItem = Utils.createItem(Material.SPAWNER, 1, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.spawner.name")),
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.amount").replace("%amount%", Long.toString(spawnerAmount))), "",
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.spawner.leftclick")),
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.spawner.rightclick")));
@@ -86,7 +86,7 @@ public class AMSInventory
         else
             efficiencyGeneration = "§a+" + Utils.doubleToString(AMSUpgradeInventory.efficiencyUpgradeEfficiency.get(efficiencyLevelBought - 1) * 100, 0) + "%";
 
-        ItemStack infoItem = Utils.createItem(Material.SIGN, 1, (byte) 0, false, ChatColor.translateAlternateColorCodes('&', ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.name"))),
+        ItemStack infoItem = Utils.createItem(Material.OAK_SIGN, 1, false, ChatColor.translateAlternateColorCodes('&', ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.name"))),
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.amount").replace("%amount%", Long.toString(spawnerAmount))), "",
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.perSecond").replace("%amount%", Utils.doubleToString(generatePerSecond, 2))),
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.perHour").replace("%amount%", Utils.doubleToString(generatePerHour, 2))), "",
@@ -94,11 +94,11 @@ public class AMSInventory
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.offlineGeneration").replace("%amount%", offlineGeneration)), "",
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.info")));
 
-        ItemStack withdrawItem = Utils.createItem(Material.DOUBLE_PLANT, 1, (byte) 0, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.withdraw.name")),
+        ItemStack withdrawItem = Utils.createItem(Material.SUNFLOWER, 1, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.withdraw.name")),
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.withdraw.click")), "",
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.withdraw.amount").replace("%amount%", Utils.doubleToString(balance, 2))));
 
-        ItemStack upgradeItem = Utils.createItem(Material.ENDER_CHEST, 1, (byte) 0, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.upgrades.name")),
+        ItemStack upgradeItem = Utils.createItem(Material.ENDER_CHEST, 1, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.upgrades.name")),
                 ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.upgrades.click")));
 
         for (int i = 0; i < 36; i++)
@@ -128,7 +128,7 @@ public class AMSInventory
                     if (items == null)
                         continue;
 
-                    if (items.getType() == Material.MOB_SPAWNER)
+                    if (items.getType() == Material.SPAWNER)
                     {
                         spawnerAmount += items.getAmount();
                         player.getInventory().removeItem(items);
@@ -161,7 +161,7 @@ public class AMSInventory
                         }
                         else
                         {
-                            if (items.getType() == Material.MOB_SPAWNER)
+                            if (items.getType() == Material.SPAWNER)
                             {
                                 if (items.getAmount() + 16 <= 64)
                                 {

@@ -25,7 +25,7 @@ public class CustomSkull
     public CustomSkull(String base64, int amount, String displayName, String... loreString)
     {
         this.base64 = base64;
-        head = new ItemStack(Material.SKULL_ITEM, amount, (byte) 3);
+        head = new ItemStack(Material.PLAYER_HEAD, amount);
         head.getItemMeta().setDisplayName(displayName);
         createSkull(head, displayName, base64, loreString);
     }

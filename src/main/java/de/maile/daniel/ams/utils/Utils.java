@@ -27,11 +27,11 @@ import java.util.UUID;
 
 public class Utils
 {
-    public static ItemStack createItem(Material material, int amount, byte subID, boolean enchanted, String displayName, String... loreString)
+    public static ItemStack createItem(Material material, int amount, boolean enchanted, String displayName, String... loreString)
     {
         List<String> lore = new ArrayList<>();
 
-        ItemStack itemStack = new ItemStack(material, amount, subID);
+        ItemStack itemStack = new ItemStack(material, amount);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(displayName);
 
@@ -58,7 +58,7 @@ public class Utils
         lore.add(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("spawner.info.line1")));
         lore.add(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("spawner.info.line2")));
 
-        itemStack = new ItemStack(Material.MOB_SPAWNER, amount);
+        itemStack = new ItemStack(Material.SPAWNER, amount);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("spawner.name")));
         itemMeta.setLore(lore);
@@ -68,7 +68,7 @@ public class Utils
 
     public static ItemStack getInventoryPlaceholderItem()
     {
-        return createItem(Material.STAINED_GLASS_PANE, 1, (byte) 7, false, " ");
+        return createItem(Material.GRAY_STAINED_GLASS_PANE, 1, false, " ");
     }
 
     public static ItemStack getBackHead(String displayName)
