@@ -16,11 +16,13 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public final class AMS extends JavaPlugin
 {
-    public static String PREFIX = "§b[AMS] §7";
+    public static String PREFIX = "[AMS] ";
     public static AMS INSTANCE;
 
     private static Economy econ = null;
@@ -30,7 +32,7 @@ public final class AMS extends JavaPlugin
     {
         if (!setupEconomy())
         {
-            log("§4Es wurde kein Economy Plugin gefunden");
+            log("Es wurde kein Economy Plugin gefunden");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -47,11 +49,12 @@ public final class AMS extends JavaPlugin
     public void onDisable()
     {
         log("Plugin deaktiviert");
+        MySQL.disconnect();
     }
 
     public void log(String text)
     {
-        Bukkit.getConsoleSender().sendMessage(PREFIX + text);
+        getLogger().info(PREFIX + text);
     }
 
     private void register()
@@ -68,9 +71,9 @@ public final class AMS extends JavaPlugin
     {
         try
         {
-            MySQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS ams (id int NOT NULL AUTO_INCREMENT," +
-                    "uuid VARCHAR(64), spawners BIGINT, balance DOUBLE PRECISION," +
-                    "online_time BIGINT, offline_time BIGINT, efficiency_upgrade INT, offline_upgrade INT, PRIMARY KEY (id));").executeUpdate();
+            MySQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS ams (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "uuid VARCHAR(64), spawners BIGINT, balance DOUBLE PRECISION, " +
+                    "online_time BIGINT, offline_time BIGINT, efficiency_upgrade INT, offline_upgrade INT);").executeUpdate();
         }
         catch (SQLException e)
         {

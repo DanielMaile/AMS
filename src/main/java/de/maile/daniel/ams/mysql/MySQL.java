@@ -6,34 +6,43 @@ package de.maile.daniel.ams.mysql;
 
 import de.maile.daniel.ams.AMS;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class MySQL
 {
     public static Connection con;
 
-    public MySQL()
-    {
-        connect();
-    }
-
     public static void connect()
     {
+
         try
         {
-            final Properties properties = new Properties();
-            properties.setProperty("user", "root");
-            properties.setProperty("password", "");
-            properties.setProperty("autoReconnect", "true");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/minecraft", properties);
-            AMS.INSTANCE.log("Mit MySQL verbunden");
+            File file = new File("plugins/AMS");
+            if(!file.exists())
+                file.mkdirs();
+
+            DriverManager.registerDriver(new org.sqlite.JDBC());
+            con = DriverManager.getConnection("jdbc:sqlite:plugins/AMS/playerdata.db");
+            AMS.INSTANCE.log("Mit Datenbank verbunden");
         }
         catch (SQLException e)
         {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public static void disconnect()
+    {
+        try
+        {
+            con.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
         }
     }
 
