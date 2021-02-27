@@ -15,6 +15,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class AMSUpgradeInventory
 {
 
@@ -26,13 +28,22 @@ public class AMSUpgradeInventory
     private static final int OFFLINE_START = 19;
     private static final int OFFLINE_END = 25;
 
-    public static final double[] efficiencyUpgradeEfficiency = {0.05d, 0.15d, 0.25d, 0.5d, 0.75d, 1d, 2d};
-    public static final double[] efficiencyUpgradeCost = {1d, 2d, 3d, 4d, 5d, 6d, 7d};
-    public static final double[] offlineUpgradeEfficiency = {0.02d, 0.05d, 0.10d, 0.20d, 0.30d, 0.40d, 0.50d};
-    public static final double[] offlineUpgradeCost = {1d, 2d, 3d, 4d, 5d, 6d, 7d};
+    public static List<Double> efficiencyUpgradeEfficiency;
+    public static List<Double> efficiencyUpgradeCost;
+    public static List<Double> offlineUpgradeEfficiency;
+    public static List<Double> offlineUpgradeCost;
+
+    public static void loadValues()
+    {
+        efficiencyUpgradeEfficiency = AMS.INSTANCE.getConfig().getDoubleList("efficiencyUpgradeEfficiency");
+        efficiencyUpgradeCost = AMS.INSTANCE.getConfig().getDoubleList("efficiencyUpgradeCost");
+        offlineUpgradeEfficiency = AMS.INSTANCE.getConfig().getDoubleList("offlineUpgradeEfficiency");
+        offlineUpgradeCost = AMS.INSTANCE.getConfig().getDoubleList("offlineUpgradeCost");
+    }
 
     public static void openInventory(Player player)
     {
+        loadValues();
         Inventory gui = Bukkit.createInventory(player, 36, AMS_UPGRADE_INVENTORY_NAME);
         updateInv(player, gui);
         player.openInventory(gui);
@@ -46,7 +57,7 @@ public class AMSUpgradeInventory
         for (int i = 0; i < 36; i++)
         {
             if (i == BACK_POS)
-                gui.setItem(i, Utils.getBackHead(AMS.INSTANCE.getConfig().getString("upgrademenu.back")));
+                gui.setItem(i, Utils.getBackHead(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.back"))));
             else if (i >= EFFICIENCY_START && i <= EFFICIENCY_END)
                 gui.setItem(i, getEfficiencyUpgradeByID(i - EFFICIENCY_START, efficiencyLevelBought));
             else if (i >= OFFLINE_START && i <= OFFLINE_END)
@@ -70,27 +81,27 @@ public class AMSUpgradeInventory
             int level = slot - EFFICIENCY_START + 1;
             if(efficiencyLevelBought - level >= 0)
             {
-                player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.alreadybought"));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.message.alreadybought")));
             }
             else if(efficiencyLevelBought - level == -1)
             {
                 double playerBalance = AMS.getEconomy().getBalance(player);
-                if(playerBalance < efficiencyUpgradeCost[level - 1])
+                if(playerBalance < efficiencyUpgradeCost.get(level - 1))
                 {
-                    player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.notenoughmoney"));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.message.notenoughmoney")));
                 }
                 else
                 {
                     AMSDatabase.setEfficiencyUpgradeLevel(player.getUniqueId(), level);
-                    AMS.getEconomy().withdrawPlayer(player, efficiencyUpgradeCost[level - 1]);
+                    AMS.getEconomy().withdrawPlayer(player, efficiencyUpgradeCost.get(level - 1));
                     updateInv(player, inventory);
-                    player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.boughtefficiency")
-                            .replace("%level%", Utils.getRoman(level)));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.message.boughtefficiency")
+                            .replace("%level%", Utils.getRoman(level))));
                 }
             }
             else
             {
-                player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.notunlocked"));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.message.notunlocked")));
             }
         }
         else if (slot >= OFFLINE_START && slot <= OFFLINE_END)
@@ -98,27 +109,27 @@ public class AMSUpgradeInventory
             int level = slot - OFFLINE_START + 1;
             if(offlineLevelBought - level >= 0)
             {
-                player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.alreadybought"));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.message.alreadybought")));
             }
             else if(offlineLevelBought - level == -1)
             {
                 double playerBalance = AMS.getEconomy().getBalance(player);
-                if(playerBalance < offlineUpgradeCost[level - 1])
+                if(playerBalance < offlineUpgradeCost.get(level - 1))
                 {
-                    player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.notenoughmoney"));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.message.notenoughmoney")));
                 }
                 else
                 {
                     AMSDatabase.setOfflineUpgradeLevel(player.getUniqueId(), level);
-                    AMS.getEconomy().withdrawPlayer(player, offlineUpgradeCost[level - 1]);
+                    AMS.getEconomy().withdrawPlayer(player, offlineUpgradeCost.get(level - 1));
                     updateInv(player, inventory);
-                    player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.boughtofflinegem")
-                            .replace("%level%", Utils.getRoman(level)));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.message.boughtofflinegem")
+                            .replace("%level%", Utils.getRoman(level))));
                 }
             }
             else
             {
-                player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.notunlocked"));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.message.notunlocked")));
             }
         }
     }
@@ -127,34 +138,34 @@ public class AMSUpgradeInventory
     {
         String costString;
         if(id + 1 <= boughtLevel)
-            costString = AMS.INSTANCE.getConfig().getString("upgrademenu.bought");
+            costString = ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.bought"));
         else if(id + 1 == boughtLevel + 1)
-            costString = "§e" + Utils.doubleToString(efficiencyUpgradeCost[id], 0) + "$";
+            costString = "§e" + Utils.doubleToString(efficiencyUpgradeCost.get(id), 0) + "$";
         else
-            costString = AMS.INSTANCE.getConfig().getString("upgrademenu.buybefore").replace("%level%", Utils.getRoman(id));
+            costString = ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.buybefore").replace("%level%", Utils.getRoman(id)));
 
         return Utils.createItem(Material.DIAMOND, id + 1, (byte) 0, id + 1 <= boughtLevel,
-                AMS.INSTANCE.getConfig().getString("upgrademenu.efficiency.name") + " " + Utils.getRoman(id + 1),
-                AMS.INSTANCE.getConfig().getString("upgrademenu.efficiency.info")
-                        .replace("%amount%", Utils.doubleToString(efficiencyUpgradeEfficiency[id] * 100, 0)), "",
-                AMS.INSTANCE.getConfig().getString("upgrademenu.price").replace("%price%", costString));
+                ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.efficiency.name") + " " + Utils.getRoman(id + 1)),
+                ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.efficiency.info")
+                        .replace("%amount%", Utils.doubleToString(efficiencyUpgradeEfficiency.get(id) * 100, 0))), "",
+                ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.price").replace("%price%", costString)));
     }
 
     private static ItemStack getOfflineUpgradeByID(int id, int boughtLevel)
     {
         String costString;
         if(id + 1 <= boughtLevel)
-            costString = AMS.INSTANCE.getConfig().getString("upgrademenu.bought");
+            costString = ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.bought"));
         else if(id + 1 == boughtLevel + 1)
-            costString = "§e" + Utils.doubleToString(offlineUpgradeCost[id], 0) + "$";
+            costString = "§e" + Utils.doubleToString(offlineUpgradeCost.get(id), 0) + "$";
         else
-            costString = AMS.INSTANCE.getConfig().getString("upgrademenu.buybefore").replace("%level%", Utils.getRoman(id));
+            costString = ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.buybefore").replace("%level%", Utils.getRoman(id)));
 
         return Utils.createItem(Material.EMERALD, id + 1, (byte) 0, id + 1 <= boughtLevel,
-                AMS.INSTANCE.getConfig().getString("upgrademenu.offlinegem.name") + " " + Utils.getRoman(id + 1),
-                AMS.INSTANCE.getConfig().getString("upgrademenu.offlinegem.info")
-                .replace("%amount%", Utils.doubleToString(offlineUpgradeEfficiency[id] * 100, 0)), "",
-                AMS.INSTANCE.getConfig().getString("upgrademenu.price").replace("%price%", costString));
+                ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.offlinegem.name") + " " + Utils.getRoman(id + 1)),
+                ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.offlinegem.info")
+                .replace("%amount%", Utils.doubleToString(offlineUpgradeEfficiency.get(id) * 100, 0))), "",
+                ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.price").replace("%price%", costString)));
 
 
     }

@@ -6,6 +6,7 @@ package de.maile.daniel.ams.ams;
 
 import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.mysql.AMSDatabase;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,7 +20,7 @@ public class AMSCommand implements CommandExecutor
     {
         if(!(sender instanceof Player))
         {
-            sender.sendMessage(AMS.INSTANCE.getConfig().getString("error.onlyPlayers"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("error.onlyPlayers")));
             return true;
         }
 

@@ -6,6 +6,7 @@ package de.maile.daniel.ams.commands;
 
 import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.utils.Utils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,7 +19,7 @@ public class SpawnerCommand implements CommandExecutor
     {
         if(!(sender instanceof Player))
         {
-            sender.sendMessage(AMS.INSTANCE.getConfig().getString("error.onlyPlayers"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("error.onlyPlayers")));
             return true;
         }
 

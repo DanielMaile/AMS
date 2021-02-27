@@ -8,6 +8,7 @@ import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.mysql.AMSDatabase;
 import de.maile.daniel.ams.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class AMSInventory
             @Override
             public void run()
             {
-                if(!player.getOpenInventory().getTopInventory().getTitle().equals(AMS_INVENTORY_NAME))
+                if (!player.getOpenInventory().getTopInventory().getTitle().equals(AMS_INVENTORY_NAME))
                 {
                     Bukkit.getScheduler().cancelTask(TASK_ID);
                 }
@@ -63,42 +64,42 @@ public class AMSInventory
         YamlConfiguration config = AMS.INSTANCE.getConfig();
 
         ItemStack placeholderItem = Utils.getInventoryPlaceholderItem();
-        ItemStack spawnerItem = Utils.createItem(Material.MOB_SPAWNER, 1, (byte) 0, false, config.getString("amsmenu.spawner.name"),
-                config.getString("amsmenu.info.amount").replace("%amount%", Long.toString(spawnerAmount)), "",
-                config.getString("amsmenu.spawner.leftclick"),
-                config.getString("amsmenu.spawner.rightclick"));
+        ItemStack spawnerItem = Utils.createItem(Material.MOB_SPAWNER, 1, (byte) 0, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.spawner.name")),
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.amount").replace("%amount%", Long.toString(spawnerAmount))), "",
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.spawner.leftclick")),
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.spawner.rightclick")));
 
         double generatePerSecond = AMSManager.getPerSecondGeneration(player);
         double generatePerHour = generatePerSecond * 60 * 60;
 
         int offlineLevelBought = AMSDatabase.getOfflineUpgradeLevel(player.getUniqueId());
         String offlineGeneration;
-        if(offlineLevelBought == 0)
-            offlineGeneration = config.getString("amsmenu.info.none");
+        if (offlineLevelBought == 0)
+            offlineGeneration = ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.none"));
         else
-            offlineGeneration = "§a" + Utils.doubleToString(AMSUpgradeInventory.offlineUpgradeEfficiency[offlineLevelBought - 1] * 100, 0) + "%";
+            offlineGeneration = "§a" + Utils.doubleToString(AMSUpgradeInventory.offlineUpgradeEfficiency.get(offlineLevelBought - 1) * 100, 0) + "%";
 
         int efficiencyLevelBought = AMSDatabase.getEfficiencyUpgradeLevel(player.getUniqueId());
         String efficiencyGeneration;
-        if(efficiencyLevelBought == 0)
-            efficiencyGeneration = config.getString("amsmenu.info.none");
+        if (efficiencyLevelBought == 0)
+            efficiencyGeneration = ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.none"));
         else
-            efficiencyGeneration = "§a+" + Utils.doubleToString(AMSUpgradeInventory.efficiencyUpgradeEfficiency[efficiencyLevelBought - 1] * 100, 0) + "%";
+            efficiencyGeneration = "§a+" + Utils.doubleToString(AMSUpgradeInventory.efficiencyUpgradeEfficiency.get(efficiencyLevelBought - 1) * 100, 0) + "%";
 
-        ItemStack infoItem = Utils.createItem(Material.SIGN, 1, (byte) 0, false, config.getString("amsmenu.info.name"),
-                config.getString("amsmenu.info.amount").replace("%amount%", Long.toString(spawnerAmount)), "",
-                config.getString("amsmenu.info.perSecond").replace("%amount%", Utils.doubleToString(generatePerSecond, 2)),
-                config.getString("amsmenu.info.perHour").replace("%amount%", Utils.doubleToString(generatePerHour, 2)), "",
-                config.getString("amsmenu.info.upgrades").replace("%amount%", efficiencyGeneration),
-                config.getString("amsmenu.info.offlineGeneration").replace("%amount%", offlineGeneration), "",
-                config.getString("amsmenu.info.info"));
+        ItemStack infoItem = Utils.createItem(Material.SIGN, 1, (byte) 0, false, ChatColor.translateAlternateColorCodes('&', ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.name"))),
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.amount").replace("%amount%", Long.toString(spawnerAmount))), "",
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.perSecond").replace("%amount%", Utils.doubleToString(generatePerSecond, 2))),
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.perHour").replace("%amount%", Utils.doubleToString(generatePerHour, 2))), "",
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.upgrades").replace("%amount%", efficiencyGeneration)),
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.offlineGeneration").replace("%amount%", offlineGeneration)), "",
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.info.info")));
 
-        ItemStack withdrawItem = Utils.createItem(Material.DOUBLE_PLANT, 1, (byte) 0, false, config.getString("amsmenu.withdraw.name"),
-                config.getString("amsmenu.withdraw.click"), "",
-                config.getString("amsmenu.withdraw.amount").replace("%amount%", Utils.doubleToString(balance, 2)));
+        ItemStack withdrawItem = Utils.createItem(Material.DOUBLE_PLANT, 1, (byte) 0, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.withdraw.name")),
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.withdraw.click")), "",
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.withdraw.amount").replace("%amount%", Utils.doubleToString(balance, 2))));
 
-        ItemStack upgradeItem = Utils.createItem(Material.ENDER_CHEST, 1, (byte) 0, false, config.getString("amsmenu.upgrades.name"),
-                config.getString("amsmenu.upgrades.click"));
+        ItemStack upgradeItem = Utils.createItem(Material.ENDER_CHEST, 1, (byte) 0, false, ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.upgrades.name")),
+                ChatColor.translateAlternateColorCodes('&', config.getString("amsmenu.upgrades.click")));
 
         for (int i = 0; i < 36; i++)
         {
@@ -138,16 +139,16 @@ public class AMSInventory
                 {
                     AMSDatabase.setSpawners(player.getUniqueId(), AMSDatabase.getSpawners(player.getUniqueId()) + spawnerAmount);
                     updateInv(player, inventory);
-                    player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.added").replace("%amount%", Long.toString(spawnerAmount)));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.added").replace("%amount%", Long.toString(spawnerAmount))));
                 }
                 else
                 {
-                    player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.nospawner"));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.nospawner")));
                 }
             }
             else if (clickType == ClickType.RIGHT)
             {
-                if(AMSDatabase.getSpawners(player.getUniqueId()) >= 16)
+                if (AMSDatabase.getSpawners(player.getUniqueId()) >= 16)
                 {
                     boolean added = false;
                     for (ItemStack items : player.getInventory().getContents())
@@ -175,35 +176,35 @@ public class AMSInventory
                     {
                         AMSDatabase.setSpawners(player.getUniqueId(), AMSDatabase.getSpawners(player.getUniqueId()) - 16);
                         updateInv(player, inventory);
-                        player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.withdraw"));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.withdraw")));
                     }
                     else
                     {
-                        player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.fullinv"));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.fullinv")));
                     }
                 }
                 else
                 {
-                    player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.notenough"));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.notenough")));
                 }
             }
         }
         else if (slot == WITHDRAW_POS)
         {
             double amsBalance = AMSDatabase.getBalance(player.getUniqueId());
-            if(amsBalance >= 50d)
+            if (amsBalance >= 50d)
             {
                 AMS.getEconomy().depositPlayer(player, amsBalance);
                 AMSDatabase.setBalance(player.getUniqueId(), 0);
-                player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.withdraw.message.added").replace("%amount%", Utils.doubleToString(amsBalance, 0)));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("amsmenu.withdraw.message.added").replace("%amount%", Utils.doubleToString(amsBalance, 0))));
                 updateInv(player, inventory);
             }
             else
             {
-                player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.withdraw.message.notenough"));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("amsmenu.withdraw.message.notenough")));
             }
         }
-        else if(slot == UPGRADE_POS)
+        else if (slot == UPGRADE_POS)
         {
             AMSUpgradeInventory.openInventory(player);
         }

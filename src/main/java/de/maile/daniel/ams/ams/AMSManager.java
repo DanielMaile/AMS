@@ -51,7 +51,7 @@ public class AMSManager
         double balance = AMSDatabase.getBalance(player.getUniqueId());
 
         int offlineLevelBought = AMSDatabase.getOfflineUpgradeLevel(player.getUniqueId());
-        double offlineMultiplier = offlineLevelBought == 0 ? 0 : AMSUpgradeInventory.offlineUpgradeEfficiency[offlineLevelBought - 1];
+        double offlineMultiplier = offlineLevelBought == 0 ? 0 : AMSUpgradeInventory.offlineUpgradeEfficiency.get(offlineLevelBought - 1);
 
         double offlineGeneration = (offlineTime * perSecondGeneration * offlineMultiplier);
 
@@ -64,8 +64,8 @@ public class AMSManager
     {
         long spawnerAmount = AMSDatabase.getSpawners(player.getUniqueId());
         int efficiencyLevelBought = AMSDatabase.getEfficiencyUpgradeLevel(player.getUniqueId());
-        double efficiencyMultiplier = efficiencyLevelBought == 0 ? 0 : AMSUpgradeInventory.efficiencyUpgradeEfficiency[efficiencyLevelBought - 1];
+        double efficiencyMultiplier = efficiencyLevelBought == 0 ? 0 : AMSUpgradeInventory.efficiencyUpgradeEfficiency.get(efficiencyLevelBought - 1);
 
-        return spawnerAmount * 0.02d * (1 + efficiencyMultiplier);
+        return spawnerAmount * AMS.INSTANCE.getConfig().getDouble("generation_multiplier") * (1 + efficiencyMultiplier);
     }
 }

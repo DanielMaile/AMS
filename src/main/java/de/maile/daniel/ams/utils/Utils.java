@@ -6,6 +6,7 @@ package de.maile.daniel.ams.utils;
 
 import de.maile.daniel.ams.AMS;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
@@ -54,12 +55,12 @@ public class Utils
         ItemStack itemStack;
 
         List<String> lore = new ArrayList<>();
-        lore.add(AMS.INSTANCE.getConfig().getString("spawner.info.line1"));
-        lore.add(AMS.INSTANCE.getConfig().getString("spawner.info.line2"));
+        lore.add(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("spawner.info.line1")));
+        lore.add(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("spawner.info.line2")));
 
         itemStack = new ItemStack(Material.MOB_SPAWNER, amount);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(AMS.INSTANCE.getConfig().getString("spawner.name"));
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("spawner.name")));
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
@@ -73,7 +74,7 @@ public class Utils
     public static ItemStack getBackHead(String displayName)
     {
         CustomSkull customSkull = new CustomSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ2OWUwNmU1ZGFkZmQ4NGU1ZjNkMWMyMTA2M2YyNTUzYjJmYTk0NWVlMWQ0ZDcxNTJmZGM1NDI1YmMxMmE5In19fQ==",
-                1, AMS.INSTANCE.getConfig().getString("upgrademenu.back"));
+                1, ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("upgrademenu.back")));
         return customSkull.toItemStack();
     }
 
