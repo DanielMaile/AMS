@@ -6,14 +6,16 @@ package de.maile.daniel.ams;
 
 import de.maile.daniel.ams.ams.AMSManager;
 import de.maile.daniel.ams.ams.AMSCommand;
-import de.maile.daniel.ams.commands.MoneyCommand;
 import de.maile.daniel.ams.commands.SpawnerCommand;
 import de.maile.daniel.ams.listeners.InventoryListener;
 import de.maile.daniel.ams.listeners.JoinQuitListener;
 import de.maile.daniel.ams.mysql.MySQL;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.sql.SQLException;
 
 public final class AMS extends JavaPlugin
@@ -21,9 +23,18 @@ public final class AMS extends JavaPlugin
     public static String PREFIX = "§b[AMS] §7";
     public static AMS INSTANCE;
 
+    private static Economy econ = null;
+
     @Override
     public void onEnable()
     {
+        if (!setupEconomy())
+        {
+            log("§4Es wurde kein Economy Plugin gefunden");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         log("Plugin aktiviert");
         INSTANCE = this;
         register();
@@ -50,7 +61,6 @@ public final class AMS extends JavaPlugin
         pluginManager.registerEvents(new JoinQuitListener(), this);
 
         Bukkit.getPluginCommand("ams").setExecutor(new AMSCommand());
-        Bukkit.getPluginCommand("money").setExecutor(new MoneyCommand());
         Bukkit.getPluginCommand("spawner").setExecutor(new SpawnerCommand());
     }
 
@@ -58,8 +68,6 @@ public final class AMS extends JavaPlugin
     {
         try
         {
-            MySQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS money (id int NOT NULL AUTO_INCREMENT," +
-                    "uuid VARCHAR(64), balance DOUBLE PRECISION, PRIMARY KEY (id));").executeUpdate();
             MySQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS ams (id int NOT NULL AUTO_INCREMENT," +
                     "uuid VARCHAR(64), spawners BIGINT, balance DOUBLE PRECISION," +
                     "online_time BIGINT, offline_time BIGINT, efficiency_upgrade INT, offline_upgrade INT, PRIMARY KEY (id));").executeUpdate();
@@ -68,5 +76,25 @@ public final class AMS extends JavaPlugin
         {
             e.printStackTrace();
         }
+    }
+
+    public static Economy getEconomy()
+    {
+        return econ;
+    }
+
+    private boolean setupEconomy()
+    {
+        if (getServer().getPluginManager().getPlugin("Vault") == null)
+        {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null)
+        {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
     }
 }

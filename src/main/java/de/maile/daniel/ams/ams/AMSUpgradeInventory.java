@@ -4,8 +4,8 @@
 
 package de.maile.daniel.ams.ams;
 
+import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.mysql.AMSDatabase;
-import de.maile.daniel.ams.mysql.MoneyDatabase;
 import de.maile.daniel.ams.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,11 +19,11 @@ public class AMSUpgradeInventory
 
     public static final String AMS_UPGRADE_INVENTORY_NAME = "§8AMS-Upgrades";
 
-    private static int BACK_POS = 0;
-    private static int EFFICIENCY_START = 10;
-    private static int EFFICIENCY_END = 16;
-    private static int OFFLINE_START = 19;
-    private static int OFFLINE_END = 25;
+    private static final int BACK_POS = 0;
+    private static final int EFFICIENCY_START = 10;
+    private static final int EFFICIENCY_END = 16;
+    private static final int OFFLINE_START = 19;
+    private static final int OFFLINE_END = 25;
 
     public static final double[] efficiencyUpgradeEfficiency = {0.05d, 0.15d, 0.25d, 0.5d, 0.75d, 1d, 2d};
     public static final double[] efficiencyUpgradeCost = {1d, 2d, 3d, 4d, 5d, 6d, 7d};
@@ -73,7 +73,7 @@ public class AMSUpgradeInventory
             }
             else if(efficiencyLevelBought - level == -1)
             {
-                double playerBalance = MoneyDatabase.getBalance(player.getUniqueId());
+                double playerBalance = AMS.getEconomy().getBalance(player);
                 if(playerBalance < efficiencyUpgradeCost[level - 1])
                 {
                     player.sendMessage("§cDu hast nicht genug Geld, um dieses Upgrade zu kaufen");
@@ -81,7 +81,7 @@ public class AMSUpgradeInventory
                 else
                 {
                     AMSDatabase.setEfficiencyUpgradeLevel(player.getUniqueId(), level);
-                    MoneyDatabase.setBalance(player.getUniqueId(), playerBalance - efficiencyUpgradeCost[level - 1]);
+                    AMS.getEconomy().withdrawPlayer(player, efficiencyUpgradeCost[level - 1]);
                     updateInv(player, inventory);
                     player.sendMessage("§aDu Offline Gem " + Utils.getRoman(level) + " gekauft");
                 }
@@ -100,7 +100,7 @@ public class AMSUpgradeInventory
             }
             else if(offlineLevelBought - level == -1)
             {
-                double playerBalance = MoneyDatabase.getBalance(player.getUniqueId());
+                double playerBalance = AMS.getEconomy().getBalance(player);
                 if(playerBalance < offlineUpgradeCost[level - 1])
                 {
                     player.sendMessage("§cDu hast nicht genug Geld, um dieses Upgrade zu kaufen");
@@ -108,7 +108,7 @@ public class AMSUpgradeInventory
                 else
                 {
                     AMSDatabase.setOfflineUpgradeLevel(player.getUniqueId(), level);
-                    MoneyDatabase.setBalance(player.getUniqueId(), playerBalance - offlineUpgradeCost[level - 1]);
+                    AMS.getEconomy().withdrawPlayer(player, offlineUpgradeCost[level - 1]);
                     updateInv(player, inventory);
                     player.sendMessage("§aDu Offline Gem " + Utils.getRoman(level) + " gekauft");
                 }

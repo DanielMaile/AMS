@@ -6,7 +6,6 @@ package de.maile.daniel.ams.ams;
 
 import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.mysql.AMSDatabase;
-import de.maile.daniel.ams.mysql.MoneyDatabase;
 import de.maile.daniel.ams.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,10 +18,10 @@ public class AMSInventory
 {
     public static final String AMS_INVENTORY_NAME = "§8AMS";
 
-    public static int SPAWNER_POS = 11;
-    public static int INFO_POS = 13;
-    public static int WITHDRAW_POS = 15;
-    public static int UPGRADE_POS = 22;
+    public static final int SPAWNER_POS = 11;
+    public static final int INFO_POS = 13;
+    public static final int WITHDRAW_POS = 15;
+    public static final int UPGRADE_POS = 22;
 
     public static int TASK_ID;
 
@@ -190,11 +189,10 @@ public class AMSInventory
             double amsBalance = AMSDatabase.getBalance(player.getUniqueId());
             if(amsBalance >= 50d)
             {
-                double newBalance = MoneyDatabase.getBalance(player.getUniqueId()) + amsBalance;
-                MoneyDatabase.setBalance(player.getUniqueId(), newBalance);
+                AMS.getEconomy().depositPlayer(player, amsBalance);
                 AMSDatabase.setBalance(player.getUniqueId(), 0);
                 player.sendMessage("§a" + Utils.doubleToString(amsBalance, 0) + "$ §7wurden zu deinem Konto hinzugefügt.\nNeuer Kontostand: §a"
-                        + Utils.doubleToString(newBalance, 0) + "$");
+                        + Utils.doubleToString(AMS.getEconomy().getBalance(player), 0) + "$");
                 updateInv(player, inventory);
             }
             else
