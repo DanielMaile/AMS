@@ -1,0 +1,9 @@
+name: AMS
+version: ${project.version}
+main: de.maile.daniel.ams.AMS
+author: Daniel Maile
+
+commands:
+  ams:
+  money:
+  spawner:
