@@ -4,6 +4,7 @@
 
 package de.maile.daniel.ams.utils;
 
+import de.maile.daniel.ams.AMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -53,12 +54,12 @@ public class Utils
         ItemStack itemStack;
 
         List<String> lore = new ArrayList<>();
-        lore.add("§7Lege Spawner in den AMS, damit");
-        lore.add("§7sie Geld für dich produzieren.");
+        lore.add(AMS.INSTANCE.getConfig().getString("spawner.info.line1"));
+        lore.add(AMS.INSTANCE.getConfig().getString("spawner.info.line2"));
 
         itemStack = new ItemStack(Material.MOB_SPAWNER, amount);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName("§a§lSpawner");
+        itemMeta.setDisplayName(AMS.INSTANCE.getConfig().getString("spawner.name"));
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
@@ -72,7 +73,7 @@ public class Utils
     public static ItemStack getBackHead(String displayName)
     {
         CustomSkull customSkull = new CustomSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ2OWUwNmU1ZGFkZmQ4NGU1ZjNkMWMyMTA2M2YyNTUzYjJmYTk0NWVlMWQ0ZDcxNTJmZGM1NDI1YmMxMmE5In19fQ==",
-                1, "§c<-- Zurück zur AMS");
+                1, AMS.INSTANCE.getConfig().getString("upgrademenu.back"));
         return customSkull.toItemStack();
     }
 

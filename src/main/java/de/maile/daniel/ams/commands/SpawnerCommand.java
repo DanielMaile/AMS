@@ -4,6 +4,7 @@
 
 package de.maile.daniel.ams.commands;
 
+import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,7 +18,7 @@ public class SpawnerCommand implements CommandExecutor
     {
         if(!(sender instanceof Player))
         {
-            sender.sendMessage("Dieser Befehl ist nur von Spielern verwendbar");
+            sender.sendMessage(AMS.INSTANCE.getConfig().getString("error.onlyPlayers"));
             return true;
         }
 

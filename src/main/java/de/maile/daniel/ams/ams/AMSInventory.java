@@ -9,6 +9,7 @@ import de.maile.daniel.ams.mysql.AMSDatabase;
 import de.maile.daniel.ams.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -59,11 +60,13 @@ public class AMSInventory
 
         double balance = AMSDatabase.getBalance(player.getUniqueId());
 
+        YamlConfiguration config = AMS.INSTANCE.getConfig();
+
         ItemStack placeholderItem = Utils.getInventoryPlaceholderItem();
-        ItemStack spawnerItem = Utils.createItem(Material.MOB_SPAWNER, 1, (byte) 0, false, "§a§lSpawner verwalten",
-                "§7Es befinden sich §a" + spawnerAmount + " §7Spawner in der AMS.", "",
-                "§aLinksklick §7>> Alle Spawner aus dem Inventar hinzufügen.",
-                "§aRechtsklick §7>> 16 Spieler aus der AMS nehmen.");
+        ItemStack spawnerItem = Utils.createItem(Material.MOB_SPAWNER, 1, (byte) 0, false, config.getString("amsmenu.spawner.name"),
+                config.getString("amsmenu.info.amount").replace("%amount%", Long.toString(spawnerAmount)), "",
+                config.getString("amsmenu.spawner.leftclick"),
+                config.getString("amsmenu.spawner.rightclick"));
 
         double generatePerSecond = AMSManager.getPerSecondGeneration(player);
         double generatePerHour = generatePerSecond * 60 * 60;
@@ -71,30 +74,31 @@ public class AMSInventory
         int offlineLevelBought = AMSDatabase.getOfflineUpgradeLevel(player.getUniqueId());
         String offlineGeneration;
         if(offlineLevelBought == 0)
-            offlineGeneration = "§cKeine";
+            offlineGeneration = config.getString("amsmenu.info.none");
         else
             offlineGeneration = "§a" + Utils.doubleToString(AMSUpgradeInventory.offlineUpgradeEfficiency[offlineLevelBought - 1] * 100, 0) + "%";
 
         int efficiencyLevelBought = AMSDatabase.getEfficiencyUpgradeLevel(player.getUniqueId());
         String efficiencyGeneration;
         if(efficiencyLevelBought == 0)
-            efficiencyGeneration = "§cKeine";
+            efficiencyGeneration = config.getString("amsmenu.info.none");
         else
             efficiencyGeneration = "§a+" + Utils.doubleToString(AMSUpgradeInventory.efficiencyUpgradeEfficiency[efficiencyLevelBought - 1] * 100, 0) + "%";
 
-        ItemStack infoItem = Utils.createItem(Material.SIGN, 1, (byte) 0, false, "§6§lInfo",
-                "§7Du hast §a" + spawnerAmount + " Spawner §7in der AMS.", "",
-                "§7$ pro Sekunde: §a" + Utils.doubleToString(generatePerSecond, 2),
-                "§7$ pro Stunde: §a" + Utils.doubleToString(generatePerHour, 2), "",
-                "§7Upgrades: " + efficiencyGeneration,
-                "§7Offline Generation: " + offlineGeneration, "",
-                "§7§oFüge mehr Spawner hinzu, um mehr zu generieren!");
+        ItemStack infoItem = Utils.createItem(Material.SIGN, 1, (byte) 0, false, config.getString("amsmenu.info.name"),
+                config.getString("amsmenu.info.amount").replace("%amount%", Long.toString(spawnerAmount)), "",
+                config.getString("amsmenu.info.perSecond").replace("%amount%", Utils.doubleToString(generatePerSecond, 2)),
+                config.getString("amsmenu.info.perHour").replace("%amount%", Utils.doubleToString(generatePerHour, 2)), "",
+                config.getString("amsmenu.info.upgrades").replace("%amount%", efficiencyGeneration),
+                config.getString("amsmenu.info.offlineGeneration").replace("%amount%", offlineGeneration), "",
+                config.getString("amsmenu.info.info"));
 
-        ItemStack withdrawItem = Utils.createItem(Material.DOUBLE_PLANT, 1, (byte) 0, false, "§a§lGeld abheben",
-                "§7Klicke hier um Geld abzuheben.", "", "§7Verfügbarer Betrag: §a" + Utils.doubleToString(balance, 2) + "$");
+        ItemStack withdrawItem = Utils.createItem(Material.DOUBLE_PLANT, 1, (byte) 0, false, config.getString("amsmenu.withdraw.name"),
+                config.getString("amsmenu.withdraw.click"), "",
+                config.getString("amsmenu.withdraw.amount").replace("%amount%", Utils.doubleToString(balance, 2)));
 
-        ItemStack upgradeItem = Utils.createItem(Material.ENDER_CHEST, 1, (byte) 0, false, "§9§lUpgrades",
-                "§7Klicke hier um das Upgrade Menü zu öffnen");
+        ItemStack upgradeItem = Utils.createItem(Material.ENDER_CHEST, 1, (byte) 0, false, config.getString("amsmenu.upgrades.name"),
+                config.getString("amsmenu.upgrades.click"));
 
         for (int i = 0; i < 36; i++)
         {
@@ -134,11 +138,11 @@ public class AMSInventory
                 {
                     AMSDatabase.setSpawners(player.getUniqueId(), AMSDatabase.getSpawners(player.getUniqueId()) + spawnerAmount);
                     updateInv(player, inventory);
-                    player.sendMessage("§7Du hast §a" + spawnerAmount + " Spawner §7in den AMS eingezahlt.");
+                    player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.added").replace("%amount%", Long.toString(spawnerAmount)));
                 }
                 else
                 {
-                    player.sendMessage("§7Du hast keine Spawner im Inventar.");
+                    player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.nospawner"));
                 }
             }
             else if (clickType == ClickType.RIGHT)
@@ -171,16 +175,16 @@ public class AMSInventory
                     {
                         AMSDatabase.setSpawners(player.getUniqueId(), AMSDatabase.getSpawners(player.getUniqueId()) - 16);
                         updateInv(player, inventory);
-                        player.sendMessage("§7Du hast §a16 Spawner §7aus der AMS genommen.");
+                        player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.withdraw"));
                     }
                     else
                     {
-                        player.sendMessage("§7Dein Inventar ist voll.");
+                        player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.fullinv"));
                     }
                 }
                 else
                 {
-                    player.sendMessage("§7Du hast nicht genug Spawner in der AMS.");
+                    player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.notenough"));
                 }
             }
         }
@@ -191,13 +195,12 @@ public class AMSInventory
             {
                 AMS.getEconomy().depositPlayer(player, amsBalance);
                 AMSDatabase.setBalance(player.getUniqueId(), 0);
-                player.sendMessage("§a" + Utils.doubleToString(amsBalance, 0) + "$ §7wurden zu deinem Konto hinzugefügt.\nNeuer Kontostand: §a"
-                        + Utils.doubleToString(AMS.getEconomy().getBalance(player), 0) + "$");
+                player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.withdraw.message.added").replace("%amount%", Utils.doubleToString(amsBalance, 0)));
                 updateInv(player, inventory);
             }
             else
             {
-                player.sendMessage("§7Du musst mindestens 50$ besitzen, um Geld auszuzahlen.");
+                player.sendMessage(AMS.INSTANCE.getConfig().getString("amsmenu.withdraw.message.notenough"));
             }
         }
         else if(slot == UPGRADE_POS)

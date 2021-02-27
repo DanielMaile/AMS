@@ -6,3 +6,4 @@ author: Daniel Maile
 commands:
   ams:
   spawner:
+    permission: ams.spawner

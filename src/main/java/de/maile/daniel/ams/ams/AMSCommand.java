@@ -4,6 +4,7 @@
 
 package de.maile.daniel.ams.ams;
 
+import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.mysql.AMSDatabase;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +19,7 @@ public class AMSCommand implements CommandExecutor
     {
         if(!(sender instanceof Player))
         {
-            sender.sendMessage("Dieser Befehl ist nur von Spielern verwendbar");
+            sender.sendMessage(AMS.INSTANCE.getConfig().getString("error.onlyPlayers"));
             return true;
         }
 

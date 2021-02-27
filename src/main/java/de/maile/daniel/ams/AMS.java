@@ -10,15 +10,17 @@ import de.maile.daniel.ams.commands.SpawnerCommand;
 import de.maile.daniel.ams.listeners.InventoryListener;
 import de.maile.daniel.ams.listeners.JoinQuitListener;
 import de.maile.daniel.ams.mysql.MySQL;
+import de.maile.daniel.ams.utils.Utils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Connection;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public final class AMS extends JavaPlugin
 {
@@ -27,34 +29,115 @@ public final class AMS extends JavaPlugin
 
     private static Economy econ = null;
 
+    private  YamlConfiguration yamlConfiguration;
+
     @Override
     public void onEnable()
     {
+        createFiles();
+        INSTANCE = this;
+
         if (!setupEconomy())
         {
-            log("Es wurde kein Economy Plugin gefunden");
+            log(yamlConfiguration.getString("error.noEcomony"));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        log(yamlConfiguration.getString("info.pluginEnabled"));
 
-        log("Plugin aktiviert");
-        INSTANCE = this;
         register();
         MySQL.connect();
         createDatabase();
         AMSManager.startUpdating();
     }
 
+    private void createFiles()
+    {
+        File folder = new File("plugins/AMS");
+        if(!folder.exists())
+            folder.mkdirs();
+
+        File file = new File("plugins/AMS/config.yml");
+        yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+
+        if(!file.exists())
+        {
+            createDefaultConfig();
+            try
+            {
+                yamlConfiguration.save(file);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public YamlConfiguration getConfig()
+    {
+        return yamlConfiguration;
+    }
+
+    private void createDefaultConfig()
+    {
+        yamlConfiguration.set("error.noEcomony", "No ecomony plugin was found.");
+        yamlConfiguration.set("error.onlyPlayers", "This command can only be executed by players.");
+        yamlConfiguration.set("info.pluginEnabled", "Plugin enabled.");
+        yamlConfiguration.set("info.pluginDisabled", "Plugin disabled.");
+        yamlConfiguration.set("info.connectedToDatabase", "Connected to Database.");
+        yamlConfiguration.set("info.offlineGeneration", "§7While you were offline your AMS generated §a%amount%$");
+        yamlConfiguration.set("spawner.name", "§a§lSpawner");
+        yamlConfiguration.set("spawner.info.line1", "§7Add spawners to your AMS so");
+        yamlConfiguration.set("spawner.info.line2", "§7they can generate money for you.");
+        yamlConfiguration.set("amsmenu.spawner.name", "§a§lManage spawners");
+        yamlConfiguration.set("amsmenu.spawner.leftclick", "§aLeftclick §7>> Add all spawners from your inventory.");
+        yamlConfiguration.set("amsmenu.spawner.rightclick", "§aRightclick §7>> Withdraw 16 spawners from your AMS.");
+        yamlConfiguration.set("amsmenu.spawner.message.nospawner", "§7There are no spawners in your inventory.");
+        yamlConfiguration.set("amsmenu.spawner.message.added", "§7You have added §a%amount% spawners §7to your AMS.");
+        yamlConfiguration.set("amsmenu.spawner.message.withdraw", "§7You withdrew §a16 spawners §7from your AMS.");
+        yamlConfiguration.set("amsmenu.spawner.message.fullinv", "§7Your inventory is full.");
+        yamlConfiguration.set("amsmenu.spawner.message.notenough", "§7There are not enough spawners in your ams.");
+        yamlConfiguration.set("amsmenu.info.name", "§6§lInfo");
+        yamlConfiguration.set("amsmenu.info.none", "§cNone");
+        yamlConfiguration.set("amsmenu.info.amount", "§7There are §a%amount% §7spawner in your AMS.");
+        yamlConfiguration.set("amsmenu.info.perSecond", "§7$ per second: §a%amount%");
+        yamlConfiguration.set("amsmenu.info.perHour", "§7$ per hour: §a%amount%");
+        yamlConfiguration.set("amsmenu.info.upgrades", "§7Upgrades: %amount%");
+        yamlConfiguration.set("amsmenu.info.offlineGeneration", "§7Offline generation: %amount%");
+        yamlConfiguration.set("amsmenu.info.info", "§7§oAdd more spawners or buy upgrades to generate more!");
+        yamlConfiguration.set("amsmenu.withdraw.name", "§a§lWithdraw money");
+        yamlConfiguration.set("amsmenu.withdraw.click", "§7Click to withdraw your money.");
+        yamlConfiguration.set("amsmenu.withdraw.amount", "§7Balance: §a%amount%$");
+        yamlConfiguration.set("amsmenu.withdraw.message.notenough", "§7You need at least 50$ to withdraw money.");
+        yamlConfiguration.set("amsmenu.withdraw.message.added", "§7You withdrew §a%amount%$§7.");
+        yamlConfiguration.set("amsmenu.upgrades.name", "§9§lUpgrades");
+        yamlConfiguration.set("amsmenu.upgrades.click", "§7Click to open the upgrade menu");
+        yamlConfiguration.set("upgrademenu.back", "§c<-- Zurück zur AMS");
+        yamlConfiguration.set("upgrademenu.offlinegem.name", "§aEfficiency");
+        yamlConfiguration.set("upgrademenu.offlinegem.info", "§7Offline generation: §a%amount%% §7from your Online Generation.");
+        yamlConfiguration.set("upgrademenu.efficiency.name", "§aOffline Gem");
+        yamlConfiguration.set("upgrademenu.efficiency.info", "§7Generation: §a+%amount%%");
+        yamlConfiguration.set("upgrademenu.bought", "§aBought");
+        yamlConfiguration.set("upgrademenu.buybefore", "§cBuy Level %level% before");
+        yamlConfiguration.set("upgrademenu.price", "§7Price: %price%");
+        yamlConfiguration.set("upgrademenu.message.alreadybought", "§cYou have already bought this upgrade.");
+        yamlConfiguration.set("upgrademenu.message.notenoughmoney", "§cNot enough money to buy this upgrade.");
+        yamlConfiguration.set("upgrademenu.message.notunlocked", "§cYou have to buy the level before first.");
+        yamlConfiguration.set("upgrademenu.message.boughtofflinegem", "§7You have bought Offline Gem %level%");
+        yamlConfiguration.set("upgrademenu.message.boughtefficiency", "§7You have bought Efficiency %level%");
+    }
+
     @Override
     public void onDisable()
     {
-        log("Plugin deaktiviert");
+        log(yamlConfiguration.getString("info.pluginDisabled"));
         MySQL.disconnect();
     }
 
     public void log(String text)
     {
-        getLogger().info(PREFIX + text);
+        getLogger().info(text);
     }
 
     private void register()

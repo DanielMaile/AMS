@@ -20,13 +20,9 @@ public class MySQL
 
         try
         {
-            File file = new File("plugins/AMS");
-            if(!file.exists())
-                file.mkdirs();
-
             DriverManager.registerDriver(new org.sqlite.JDBC());
             con = DriverManager.getConnection("jdbc:sqlite:plugins/AMS/playerdata.db");
-            AMS.INSTANCE.log("Mit Datenbank verbunden");
+            AMS.INSTANCE.log(AMS.INSTANCE.getConfig().getString("info.connectedToDatabase"));
         }
         catch (SQLException e)
         {

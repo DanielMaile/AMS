@@ -8,6 +8,7 @@ import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.mysql.AMSDatabase;
 import de.maile.daniel.ams.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -45,7 +46,7 @@ public class AMSUpgradeInventory
         for (int i = 0; i < 36; i++)
         {
             if (i == BACK_POS)
-                gui.setItem(i, Utils.getBackHead("§c<-- Zurück zur AMS"));
+                gui.setItem(i, Utils.getBackHead(AMS.INSTANCE.getConfig().getString("upgrademenu.back")));
             else if (i >= EFFICIENCY_START && i <= EFFICIENCY_END)
                 gui.setItem(i, getEfficiencyUpgradeByID(i - EFFICIENCY_START, efficiencyLevelBought));
             else if (i >= OFFLINE_START && i <= OFFLINE_END)
@@ -69,26 +70,27 @@ public class AMSUpgradeInventory
             int level = slot - EFFICIENCY_START + 1;
             if(efficiencyLevelBought - level >= 0)
             {
-                player.sendMessage("§cDu hast dieses Upgrade bereits gekauft");
+                player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.alreadybought"));
             }
             else if(efficiencyLevelBought - level == -1)
             {
                 double playerBalance = AMS.getEconomy().getBalance(player);
                 if(playerBalance < efficiencyUpgradeCost[level - 1])
                 {
-                    player.sendMessage("§cDu hast nicht genug Geld, um dieses Upgrade zu kaufen");
+                    player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.notenoughmoney"));
                 }
                 else
                 {
                     AMSDatabase.setEfficiencyUpgradeLevel(player.getUniqueId(), level);
                     AMS.getEconomy().withdrawPlayer(player, efficiencyUpgradeCost[level - 1]);
                     updateInv(player, inventory);
-                    player.sendMessage("§aDu Offline Gem " + Utils.getRoman(level) + " gekauft");
+                    player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.boughtefficiency")
+                            .replace("%level%", Utils.getRoman(level)));
                 }
             }
             else
             {
-                player.sendMessage("§cDu musst erst das vorherige Level dieses Upgrades kaufen, um das nächste freizuschalten");
+                player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.notunlocked"));
             }
         }
         else if (slot >= OFFLINE_START && slot <= OFFLINE_END)
@@ -96,26 +98,27 @@ public class AMSUpgradeInventory
             int level = slot - OFFLINE_START + 1;
             if(offlineLevelBought - level >= 0)
             {
-                player.sendMessage("§cDu hast dieses Upgrade bereits gekauft");
+                player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.alreadybought"));
             }
             else if(offlineLevelBought - level == -1)
             {
                 double playerBalance = AMS.getEconomy().getBalance(player);
                 if(playerBalance < offlineUpgradeCost[level - 1])
                 {
-                    player.sendMessage("§cDu hast nicht genug Geld, um dieses Upgrade zu kaufen");
+                    player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.notenoughmoney"));
                 }
                 else
                 {
                     AMSDatabase.setOfflineUpgradeLevel(player.getUniqueId(), level);
                     AMS.getEconomy().withdrawPlayer(player, offlineUpgradeCost[level - 1]);
                     updateInv(player, inventory);
-                    player.sendMessage("§aDu Offline Gem " + Utils.getRoman(level) + " gekauft");
+                    player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.boughtofflinegem")
+                            .replace("%level%", Utils.getRoman(level)));
                 }
             }
             else
             {
-                player.sendMessage("§cDu musst erst das vorherige Level dieses Upgrades kaufen, um das nächste freizuschalten");
+                player.sendMessage(AMS.INSTANCE.getConfig().getString("upgrademenu.message.notunlocked"));
             }
         }
     }
@@ -124,32 +127,35 @@ public class AMSUpgradeInventory
     {
         String costString;
         if(id + 1 <= boughtLevel)
-            costString = "§aGekauft";
+            costString = AMS.INSTANCE.getConfig().getString("upgrademenu.bought");
         else if(id + 1 == boughtLevel + 1)
             costString = "§e" + Utils.doubleToString(efficiencyUpgradeCost[id], 0) + "$";
         else
-            costString = "§cZuerst Level " + Utils.getRoman(id) + " kaufen";
+            costString = AMS.INSTANCE.getConfig().getString("upgrademenu.buybefore").replace("%level%", Utils.getRoman(id));
 
-        return Utils.createItem(Material.DIAMOND, id + 1, (byte) 0, id + 1 <= boughtLevel,"§aEffizienz " + Utils.getRoman(id + 1),
-                "§7Mit diesem Upgrade produziert", "§7deine AMS §a" + Utils.doubleToString(efficiencyUpgradeEfficiency[id] * 100, 0)
-                        + "% mehr", "",
-                "§7Preis: " + costString);
+        return Utils.createItem(Material.DIAMOND, id + 1, (byte) 0, id + 1 <= boughtLevel,
+                AMS.INSTANCE.getConfig().getString("upgrademenu.efficiency.name") + " " + Utils.getRoman(id + 1),
+                AMS.INSTANCE.getConfig().getString("upgrademenu.efficiency.info")
+                        .replace("%amount%", Utils.doubleToString(efficiencyUpgradeEfficiency[id] * 100, 0)), "",
+                AMS.INSTANCE.getConfig().getString("upgrademenu.price").replace("%price%", costString));
     }
 
     private static ItemStack getOfflineUpgradeByID(int id, int boughtLevel)
     {
         String costString;
         if(id + 1 <= boughtLevel)
-            costString = "§aGekauft";
+            costString = AMS.INSTANCE.getConfig().getString("upgrademenu.bought");
         else if(id + 1 == boughtLevel + 1)
             costString = "§e" + Utils.doubleToString(offlineUpgradeCost[id], 0) + "$";
         else
-            costString = "§cZuerst Level " + Utils.getRoman(id) + " kaufen";
+            costString = AMS.INSTANCE.getConfig().getString("upgrademenu.buybefore").replace("%level%", Utils.getRoman(id));
 
-        return Utils.createItem(Material.EMERALD, id + 1, (byte) 0, id + 1 <= boughtLevel, "§aOffline Gem " + Utils.getRoman(id + 1),
-                "§7Mit diesem Upgrade produziert", "§7deine AMS §a" + Utils.doubleToString(offlineUpgradeEfficiency[id] * 100, 0)
-                        + "% §7von deinem",
-                "§7normalen Wert, während du offline bist", "",
-                "§7Preis: " + costString);
+        return Utils.createItem(Material.EMERALD, id + 1, (byte) 0, id + 1 <= boughtLevel,
+                AMS.INSTANCE.getConfig().getString("upgrademenu.offlinegem.name") + " " + Utils.getRoman(id + 1),
+                AMS.INSTANCE.getConfig().getString("upgrademenu.offlinegem.info")
+                .replace("%amount%", Utils.doubleToString(offlineUpgradeEfficiency[id] * 100, 0)), "",
+                AMS.INSTANCE.getConfig().getString("upgrademenu.price").replace("%price%", costString));
+
+
     }
 }
