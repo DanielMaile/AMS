@@ -62,6 +62,8 @@ public class Utils
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("spawner.name")));
         itemMeta.setLore(lore);
+        itemMeta.addEnchant(Enchantment.OXYGEN, 1, false);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
