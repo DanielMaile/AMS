@@ -19,22 +19,14 @@ public class EntityDeathListener implements Listener
         if(event.getEntity().getType() == EntityType.PLAYER)
         {
             if(AMS.INSTANCE.getConfig().getBoolean("drops.player.enabled"))
-                dropSpawner(event.getEntity().getLocation(), AMS.INSTANCE.getConfig().getDouble("drops.player.chance"));
+                Utils.dropSpawner(event.getEntity().getLocation(), AMS.INSTANCE.getConfig().getDouble("drops.player.chance"));
         }
         else
         {
             if(AMS.INSTANCE.getConfig().getBoolean("drops.entity.enabled"))
-                dropSpawner(event.getEntity().getLocation(), AMS.INSTANCE.getConfig().getDouble("drops.entity.chance"));
+                Utils.dropSpawner(event.getEntity().getLocation(), AMS.INSTANCE.getConfig().getDouble("drops.entity.chance"));
         }
     }
 
-    private void dropSpawner(Location location, double chance)
-    {
-        Random random = new Random();
-        if(random.nextDouble() <= chance)
-        {
-            ItemStack itemStack = Utils.createSpawners(1);
-            location.getWorld().dropItemNaturally(location, itemStack);
-        }
-    }
+
 }

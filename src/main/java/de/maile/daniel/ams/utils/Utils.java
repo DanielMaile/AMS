@@ -5,10 +5,7 @@
 package de.maile.daniel.ams.utils;
 
 import de.maile.daniel.ams.AMS;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +20,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class Utils
@@ -130,5 +128,15 @@ public class Utils
         }
         DecimalFormat formatter = new DecimalFormat(pattern);
         return formatter.format(d);
+    }
+
+    public static void dropSpawner(Location location, double chance)
+    {
+        Random random = new Random();
+        if(random.nextDouble() <= chance)
+        {
+            ItemStack itemStack = Utils.createSpawners(1);
+            location.getWorld().dropItemNaturally(location, itemStack);
+        }
     }
 }

@@ -8,17 +8,20 @@ import de.maile.daniel.ams.ams.AMSManager;
 import de.maile.daniel.ams.ams.AMSCommand;
 import de.maile.daniel.ams.ams.AMSUpgradeInventory;
 import de.maile.daniel.ams.commands.SpawnerCommand;
-import de.maile.daniel.ams.listeners.BlockPlaceListener;
+import de.maile.daniel.ams.listeners.BlockListener;
 import de.maile.daniel.ams.listeners.EntityDeathListener;
 import de.maile.daniel.ams.listeners.InventoryListener;
 import de.maile.daniel.ams.listeners.JoinQuitListener;
 import de.maile.daniel.ams.mysql.MySQL;
+import de.maile.daniel.ams.utils.Utils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,6 +58,21 @@ public final class AMS extends JavaPlugin
         createDatabase();
         AMSUpgradeInventory.loadValues();
         AMSManager.startUpdating();
+        addSpawnerRecipe();
+    }
+
+    private void addSpawnerRecipe()
+    {
+        if(getConfig().getBoolean("enable_spawner_crafting"))
+        {
+            ItemStack itemStack = Utils.createSpawners(1);
+            NamespacedKey key = new NamespacedKey(this, "spawner");
+            ShapedRecipe recipe = new ShapedRecipe(key, itemStack);
+            recipe.shape("III", "IGI", "III");
+            recipe.setIngredient('I', Material.IRON_INGOT);
+            recipe.setIngredient('G', Material.GOLD_BLOCK);
+            Bukkit.addRecipe(recipe);
+        }
     }
 
     private void createFiles()
@@ -88,9 +106,11 @@ public final class AMS extends JavaPlugin
     private void createDefaultConfig()
     {
         yamlConfiguration.set("drops.player.enabled", true);
-        yamlConfiguration.set("drops.player.chance", 0.05d);
+        yamlConfiguration.set("drops.player.chance", 0.01d);
         yamlConfiguration.set("drops.entity.enabled", true);
-        yamlConfiguration.set("drops.entity.chance", 0.05d);
+        yamlConfiguration.set("drops.entity.chance", 0.01d);
+        yamlConfiguration.set("enable_spawner_crafting", true);
+        yamlConfiguration.set("allow_spawner_break", true);
         yamlConfiguration.set("efficiencyUpgradeEfficiency", new double[] {0.05d, 0.15d, 0.25d, 0.5d, 0.75d, 1d, 2d});
         yamlConfiguration.set("efficiencyUpgradeCost", new double[] {100d, 500d, 1000d, 5000d, 10000d, 25000d, 100000d});
         yamlConfiguration.set("offlineUpgradeEfficiency", new double[] {0.02d, 0.05d, 0.10d, 0.20d, 0.30d, 0.40d, 0.50d});
@@ -160,7 +180,7 @@ public final class AMS extends JavaPlugin
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new InventoryListener(), this);
         pluginManager.registerEvents(new JoinQuitListener(), this);
-        pluginManager.registerEvents(new BlockPlaceListener(), this);
+        pluginManager.registerEvents(new BlockListener(), this);
         pluginManager.registerEvents(new EntityDeathListener(), this);
 
         Bukkit.getPluginCommand("ams").setExecutor(new AMSCommand());
