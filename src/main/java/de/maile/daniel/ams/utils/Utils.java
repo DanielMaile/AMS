@@ -5,7 +5,10 @@
 package de.maile.daniel.ams.utils;
 
 import de.maile.daniel.ams.AMS;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.NBTTagList;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -63,7 +66,13 @@ public class Utils
         itemMeta.addEnchant(Enchantment.OXYGEN, 1, false);
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);
-        return itemStack;
+
+        net.minecraft.server.v1_16_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        NBTTagCompound nbtTagCompound = nmsStack.getOrCreateTag();
+        nbtTagCompound.setString("ams", "spawner");
+        nmsStack.setTag(nbtTagCompound);
+
+        return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
     public static ItemStack getInventoryPlaceholderItem()
