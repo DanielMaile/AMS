@@ -7,6 +7,7 @@ package de.maile.daniel.ams;
 import de.maile.daniel.ams.ams.AMSManager;
 import de.maile.daniel.ams.ams.AMSCommand;
 import de.maile.daniel.ams.ams.AMSUpgradeInventory;
+import de.maile.daniel.ams.bstats.Metrics;
 import de.maile.daniel.ams.commands.SpawnerCommand;
 import de.maile.daniel.ams.listeners.BlockListener;
 import de.maile.daniel.ams.listeners.EntityDeathListener;
@@ -44,6 +45,9 @@ public final class AMS extends JavaPlugin
     {
         createFiles();
         INSTANCE = this;
+
+        int pluginId = 10537;
+        Metrics metrics = new Metrics(this, pluginId);
 
         if (!setupEconomy())
         {
