@@ -75,6 +75,33 @@ public class Utils
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
+    public static ItemStack createGift(long amount, String playername)
+    {
+        ItemStack itemStack;
+
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("gift.item.amount")).replace("%amount%", Long.toString(amount)));
+        lore.add(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("gift.item.from")).replace("%playername%", playername));
+        lore.add("");
+        lore.add(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("gift.item.rightclick")));
+
+        itemStack = new ItemStack(Material.PAPER, 1);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("gift.item.name")));
+        itemMeta.setLore(lore);
+        itemMeta.addEnchant(Enchantment.OXYGEN, 1, false);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        itemStack.setItemMeta(itemMeta);
+
+        net.minecraft.server.v1_16_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        NBTTagCompound nbtTagCompound = nmsStack.getOrCreateTag();
+        nbtTagCompound.setString("ams", "gift");
+        nbtTagCompound.setLong("amount", amount);
+        nmsStack.setTag(nbtTagCompound);
+
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
     public static ItemStack getInventoryPlaceholderItem()
     {
         return createItem(Material.GRAY_STAINED_GLASS_PANE, 1, false, " ");

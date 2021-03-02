@@ -8,11 +8,9 @@ import de.maile.daniel.ams.ams.AMSManager;
 import de.maile.daniel.ams.ams.AMSCommand;
 import de.maile.daniel.ams.ams.AMSUpgradeInventory;
 import de.maile.daniel.ams.bstats.Metrics;
+import de.maile.daniel.ams.commands.GiftCommand;
 import de.maile.daniel.ams.commands.SpawnerCommand;
-import de.maile.daniel.ams.listeners.BlockListener;
-import de.maile.daniel.ams.listeners.EntityDeathListener;
-import de.maile.daniel.ams.listeners.InventoryListener;
-import de.maile.daniel.ams.listeners.JoinQuitListener;
+import de.maile.daniel.ams.listeners.*;
 import de.maile.daniel.ams.mysql.MySQL;
 import de.maile.daniel.ams.utils.Utils;
 import net.milkbowl.vault.economy.Economy;
@@ -122,6 +120,7 @@ public final class AMS extends JavaPlugin
         yamlConfiguration.set("generation_multiplier", 0.1d);
         yamlConfiguration.set("error.noEcomony", "No ecomony plugin was found.");
         yamlConfiguration.set("error.onlyPlayers", "This command can only be executed by players.");
+        yamlConfiguration.set("error.fullinv", "&7Your inventory is full.");
         yamlConfiguration.set("info.pluginEnabled", "Plugin enabled.");
         yamlConfiguration.set("info.pluginDisabled", "Plugin disabled.");
         yamlConfiguration.set("info.connectedToDatabase", "Connected to Database.");
@@ -135,8 +134,7 @@ public final class AMS extends JavaPlugin
         yamlConfiguration.set("amsmenu.spawner.message.nospawner", "&7There are no spawners in your inventory.");
         yamlConfiguration.set("amsmenu.spawner.message.added", "&7You have added &a%amount% spawners &7to your AMS.");
         yamlConfiguration.set("amsmenu.spawner.message.withdraw", "&7You withdrew &a16 spawners &7from your AMS.");
-        yamlConfiguration.set("amsmenu.spawner.message.fullinv", "&7Your inventory is full.");
-        yamlConfiguration.set("amsmenu.spawner.message.notenough", "&7There are not enough spawners in your ams.");
+        yamlConfiguration.set("amsmenu.spawner.message.notenough", "&7There are not enough spawners in your AMS.");
         yamlConfiguration.set("amsmenu.info.name", "&6&lInfo");
         yamlConfiguration.set("amsmenu.info.none", "&cNone");
         yamlConfiguration.set("amsmenu.info.amount", "&7There are &a%amount% &7spawner in your AMS.");
@@ -165,6 +163,14 @@ public final class AMS extends JavaPlugin
         yamlConfiguration.set("upgrademenu.message.notunlocked", "&cYou have to buy the level before first.");
         yamlConfiguration.set("upgrademenu.message.boughtofflinegem", "&7You have bought &aOffline Gem %level%");
         yamlConfiguration.set("upgrademenu.message.boughtefficiency", "&7You have bought &aEfficiency %level%");
+        yamlConfiguration.set("gift.item.name", "&b&lGift");
+        yamlConfiguration.set("gift.item.amount", "&7Amount: &a%amount%");
+        yamlConfiguration.set("gift.item.from", "&7From: &a%playername%");
+        yamlConfiguration.set("gift.item.rightclick", "&aRightclick &7>> Redeem your gift.");
+        yamlConfiguration.set("gift.message.notenough", "&7You don't have enough spawners in your AMS.");
+        yamlConfiguration.set("gift.message.usage", "&7Use /gift (amount)");
+        yamlConfiguration.set("gift.message.novalue", "&7%value% is not a number.");
+        yamlConfiguration.set("gift.message.atleast", "&7You have to gift at least 1 spawner.");
     }
 
     @Override
@@ -186,8 +192,10 @@ public final class AMS extends JavaPlugin
         pluginManager.registerEvents(new JoinQuitListener(), this);
         pluginManager.registerEvents(new BlockListener(), this);
         pluginManager.registerEvents(new EntityDeathListener(), this);
+        pluginManager.registerEvents(new InteractListener(), this);
 
         Bukkit.getPluginCommand("ams").setExecutor(new AMSCommand());
+        Bukkit.getPluginCommand("gift").setExecutor(new GiftCommand());
         Bukkit.getPluginCommand("spawner").setExecutor(new SpawnerCommand());
     }
 

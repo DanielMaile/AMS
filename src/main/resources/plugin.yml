@@ -7,5 +7,6 @@ depend: [Vault]
 
 commands:
   ams:
+  gift:
   spawner:
     permission: ams.spawner

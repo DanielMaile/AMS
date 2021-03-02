@@ -7,10 +7,12 @@ package de.maile.daniel.ams.ams;
 import de.maile.daniel.ams.AMS;
 import de.maile.daniel.ams.mysql.AMSDatabase;
 import de.maile.daniel.ams.utils.Utils;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -130,8 +132,25 @@ public class AMSInventory
 
                     if (items.getType() == Material.SPAWNER)
                     {
-                        spawnerAmount += items.getAmount();
-                        player.getInventory().removeItem(items);
+                        net.minecraft.server.v1_16_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(items);
+                        NBTTagCompound nbtTagCompound = nmsStack.getTag();
+
+                        if (nbtTagCompound != null)
+                        {
+                            if (nbtTagCompound.hasKey("ams"))
+                            {
+                                String value = nbtTagCompound.getString("ams");
+
+                                if(value != null)
+                                {
+                                    if (value.equals("spawner"))
+                                    {
+                                        spawnerAmount += items.getAmount();
+                                        player.getInventory().removeItem(items);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -150,10 +169,13 @@ public class AMSInventory
             {
                 if (AMSDatabase.getSpawners(player.getUniqueId()) >= 16)
                 {
+
                     boolean added = false;
-                    for (ItemStack items : player.getInventory().getContents())
+                    ItemStack[] items = player.getInventory().getContents();
+
+                    for (int i = 0; i < 36; i++)
                     {
-                        if (items == null)
+                        if (items[i] == null)
                         {
                             player.getInventory().addItem(Utils.createSpawners(16));
                             added = true;
@@ -161,17 +183,18 @@ public class AMSInventory
                         }
                         else
                         {
-                            if (items.getType() == Material.SPAWNER)
+                            if (items[i].getType() == Material.SPAWNER)
                             {
-                                if (items.getAmount() + 16 <= 64)
+                                if (items[i].getAmount() + 16 <= 64)
                                 {
-                                    items.setAmount(items.getAmount() + 16);
+                                    items[i].setAmount(items[i].getAmount() + 16);
                                     added = true;
                                     break;
                                 }
                             }
                         }
                     }
+
                     if (added)
                     {
                         AMSDatabase.setSpawners(player.getUniqueId(), AMSDatabase.getSpawners(player.getUniqueId()) - 16);
@@ -180,7 +203,7 @@ public class AMSInventory
                     }
                     else
                     {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("amsmenu.spawner.message.fullinv")));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', AMS.INSTANCE.getConfig().getString("error.fullinv")));
                     }
                 }
                 else
